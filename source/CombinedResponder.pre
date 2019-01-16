@@ -2,17 +2,30 @@
 
 namespace App;
 
+use Closure;
 use function App\render;
 
-class CombinedResponder
+class CombinedResponder implements Updates
 {
+    use UpdatesTrait {
+        setSender as previousSetSender;
+    }
+
     private $counter;
     private $todos;
+    private $time;
 
     public function __construct()
     {
         $this->counter = new CounterResponder();
         $this->todos = new TodosResponder();
+        $this->time = new TimeResponder();
+    }
+
+    public function setSender(Closure $sender)
+    {
+        $this->previousSetSender($sender);
+        $this->time->setSender($sender);
     }
 
     public function render()
@@ -21,6 +34,7 @@ class CombinedResponder
             <div>
                 {$this->counter->render()}
                 {$this->todos->render()}
+                {$this->time->render()}
             </div>
         );
     }

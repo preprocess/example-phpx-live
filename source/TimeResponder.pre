@@ -1,0 +1,34 @@
+<?php
+
+namespace App;
+
+use Amp\Loop;
+use function App\render;
+
+class TimeResponder implements Updates
+{
+    use UpdatesTrait;
+
+    private $time;
+
+    public function __construct()
+    {
+        $this->time = date("H:i:s");
+
+        Loop::repeat(750, function() {
+            $this->time = date("H:i:s");
+            $this->update($marker = "time123");
+        });
+    }
+
+    public function render()
+    {
+        return (
+            <div phpx-marker={"time123"}>
+                <script src={"/runtime.js"}></script>
+                time: {$this->time}
+            </div>
+        );
+    }
+}
+

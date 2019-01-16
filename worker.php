@@ -11,6 +11,7 @@ use Amp\Http\Server\Websocket\Message;
 use Amp\Http\Server\Websocket\Websocket;
 use Amp\Loop;
 use Amp\Socket;
+use App\Updates;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
@@ -18,8 +19,9 @@ use Monolog\Handler\StreamHandler;
 
 $websocket = new class extends Websocket
 {
-    private $instances = [];
-    private $bindings = [];
+    private $classes = [];
+    private $binds = [];
+    private $senders = [];
 
     public function onHandshake(Request $request, Response $response)
     {
@@ -30,7 +32,9 @@ $websocket = new class extends Websocket
 
     public function onOpen(int $clientId, Request $request)
     {
-        // do nothing
+        $this->senders[$clientId] = function($data) use ($clientId) {
+            $this->send($data, $clientId);
+        };
     }
 
     public function onData(int $clientId, Message $message)
@@ -38,10 +42,23 @@ $websocket = new class extends Websocket
         $text = yield $message->buffer();
         $json = json_decode($text);
 
+        if (!isset($this->classes[$clientId])) {
+            $this->classes[$clientId] = [];
+        }
+
+        if (!isset($this->binds[$clientId])) {
+            $this->binds[$clientId] = [];
+        }
+
         if ($json->type === "phpx-init") {
             foreach ($json->classes as $class) {
                 if (class_exists($class)) {
-                    $this->instances[$class] = new $class();
+                    $this->classes[$clientId][$class] = new $class();
+
+                    if ($this->classes[$clientId][$class] instanceof Updates) {
+                        $this->classes[$clientId][$class]->setSender($this->senders[$clientId]);
+                    }
+
                     print "Creating {$class} for {$clientId}" . PHP_EOL;
                 }
             }
@@ -50,35 +67,35 @@ $websocket = new class extends Websocket
         if ($json->type === "phpx-click" || $json->type === "phpx-enter") {
             print "{$json->class}.{$json->method} triggered with {$json->type} from {$clientId}" . PHP_EOL;
 
-            $bindings = isset($this->bindings[$json->class])
-                ? $this->bindings[$json->class]
+            $binds = isset($this->binds[$clientId][$json->class])
+                ? $this->binds[$clientId][$json->class]
                 : [];
 
             $arguments = !empty($json->arguments)
                 ? explode(",", (string) $json->arguments)
                 : [];
 
-            $this->instances[$json->class]->{$json->method}($bindings, ...$arguments);
+            $this->classes[$clientId][$json->class]->{$json->method}($binds, ...$arguments);
 
             $data = json_encode([
                 "cause" => $json->type,
                 "type" => "phpx-render",
-                "data" => (string) $this->instances[$json->class]->render(),
+                "data" => (string) $this->classes[$clientId][$json->class]->render(),
                 "class" => $json->class,
                 "id" => $json->id,
             ]);
 
-            yield $this->send($data, $clientId);
+            $this->send($data, $clientId);
         }
 
         if ($json->type === "phpx-bind") {
-            print "{$json->class}.{$json->key} = '{$json->value}' from {$clientId}" . PHP_EOL;
+            // print "{$json->class}.{$json->key} = '{$json->value}' from {$clientId}" . PHP_EOL;
 
-            if (!isset($this->bindings[$json->class])) {
-                $this->bindings[$json->class] = [];
+            if (!isset($this->binds[$clientId][$json->class])) {
+                $this->binds[$clientId][$json->class] = [];
             }
 
-            $this->bindings[$json->class][$json->key] = $json->value;
+            $this->binds[$clientId][$json->class][$json->key] = $json->value;
         }
     }
 

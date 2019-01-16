@@ -85,7 +85,18 @@ if (!window.PhpxLiveSocket) {
             const json = JSON.parse(data)
 
             if (json.type === "phpx-render") {
-                const root = findRootNode(json.id, json.class)
+                const root =
+                    json.cause === "phpx-update"
+                        ? document.querySelector(
+                              `[phpx-marker='${json.marker}']`
+                          )
+                        : findRootNode(json.id, json.class)
+
+                if (!root) {
+                    throw new Exception(
+                        `Can't find a root node to update: ${data}`
+                    )
+                }
 
                 root.innerHTML = json.data
                 root.replaceWith(...root.childNodes)

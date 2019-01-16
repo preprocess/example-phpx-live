@@ -1,0 +1,11 @@
+<?php
+
+namespace App;
+
+use Closure;
+
+interface Updates
+{
+    public function setSender(Closure $sender);
+    public function update(string $marker);
+}

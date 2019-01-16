@@ -13,6 +13,7 @@ require __DIR__ . "/../vendor/autoload.php";
 use App\CombinedResponder;
 use App\CounterResponder;
 use App\HomeResponder;
+use App\TimeResponder;
 use App\TodosResponder;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -39,6 +40,11 @@ $app->get("/todos", function(Request $request, Response $response) {
 
 $app->get("/combined", function(Request $request, Response $response) {
     $response->getBody()->write((new CombinedResponder())->render());
+    return $response;
+});
+
+$app->get("/time", function(Request $request, Response $response) {
+    $response->getBody()->write((new TimeResponder())->render());
     return $response;
 });
 
