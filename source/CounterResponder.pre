@@ -1,0 +1,32 @@
+<?php
+
+namespace App;
+
+use function App\render;
+
+class CounterResponder
+{
+    private $counter = 0;
+
+    public function increment()
+    {
+        $this->counter++;
+    }
+
+    public function decrement()
+    {
+        $this->counter--;
+    }
+
+    public function render()
+    {
+        return (
+            <div>
+                <script src={"/runtime.js"}></script>
+                counter: {$this->counter}
+                <button phpx-click={"increment"}>+</button>
+                <button phpx-click={"decrement"}>-</button>
+            </div>
+        );
+    }
+}

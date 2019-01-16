@@ -1,0 +1,52 @@
+<?php
+
+namespace App;
+
+use Ramsey\Uuid\Uuid;
+use function Pre\Phpx\Html\render as renderHTML;
+
+function render($type, $props) {
+    $class = false;
+    $frames = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
+
+    foreach ($frames as $frame) {
+        if (isset($frame["class"])) {
+            $class = $frame["class"];
+            break;
+        }
+    }
+
+    return new class($type, $props, $class)
+    {
+        public $type;
+        public $props;
+        public $class;
+        public $uuid;
+
+        public function __construct($type, $props, $class = null)
+        {
+            $this->type = $type;
+            $this->props = $props;
+            $this->class = $class;
+
+            $uuid = Uuid::uuid4();
+            $this->uuid = $uuid->toString();
+        }
+
+        public function __toString()
+        {
+            if ($this->class) {
+                $this->props["phpx-class"] = $this->class;
+            } else {
+                unset($this->props["phpx-click"]);
+                unset($this->props["phpx-enter"]);
+            }
+
+            if (isset($this->props["phpx-click"]) || isset($this->props["phpx-enter"])) {
+                $this->props["phpx-id"] = $this->uuid;
+            }
+
+            return renderHTML($this->type, $this->props);
+        }
+    };
+}

@@ -1,0 +1,36 @@
+<?php
+
+namespace App;
+
+use function App\render;
+
+class TodosResponder
+{
+    private $todos = [];
+
+    public function addTodo(array $binds)
+    {
+        $this->todos[] = $binds["todo"];
+    }
+
+    public function render()
+    {
+        return (
+            <div>
+                <script src={"/runtime.js"}></script>
+                <input type={"text"} phpx-bind={"todo"} phpx-enter={"addTodo"} />
+                <ol>
+                    {array_map(
+                        $todo ~> $this->renderTodo($todo),
+                        $this->todos
+                    )}
+                </ol>
+            </div>
+        );
+    }
+
+    public function renderTodo(string $todo)
+    {
+        return <li>{$todo}</li>;
+    }
+}

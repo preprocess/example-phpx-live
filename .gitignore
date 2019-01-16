@@ -1,0 +1,5 @@
+/vendor
+/pre.compilers
+/pre.macros
+/source/**/*.php
+/.env

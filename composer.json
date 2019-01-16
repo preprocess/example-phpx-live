@@ -1,0 +1,26 @@
+{
+    "scripts": {
+        "work": "php worker.php",
+        "serve": "php -S 127.0.0.1:8888 -t public public/index.php"
+    },
+    "require": {
+        "amphp/http-server-router": "^1.0",
+        "amphp/websocket-server": "dev-master",
+        "monolog/monolog": "^1.24",
+        "pre/phpx-html": "^0.2.10",
+        "pre/short-closures": "^0.7.1",
+        "ramsey/uuid": "^3.8",
+        "slim/slim": "^3.12"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "source"
+        }
+    },
+    "config": {
+        "process-timeout": 0,
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
