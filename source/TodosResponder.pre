@@ -13,6 +13,14 @@ class TodosResponder
         $this->todos[] = $binds["todo"];
     }
 
+    public function removeTodo(array $binds, $hash)
+    {
+        $this->todos = array_filter(
+            $this->todos,
+            $todo ~> md5($todo) !== $hash
+        );
+    }
+
     public function render()
     {
         return (
@@ -31,6 +39,11 @@ class TodosResponder
 
     public function renderTodo(string $todo)
     {
-        return <li>{$todo}</li>;
+        return (
+            <li>
+                {$todo}
+                <button phpx-click={"removeTodo:" . md5($todo)}>remove</button>
+            </li>
+        );
     }
 }

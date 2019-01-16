@@ -31,17 +31,23 @@ if (!window.PhpxLiveSocket) {
                 })
         }
 
-        const findRootNode = function(id, cls) {
-            let element = document.querySelector(`[phpx-id='${id}']`)
-
+        function findAncestor(element, selector) {
             while (
-                element.parentNode &&
-                element.parentNode.getAttribute("phpx-class") === cls
-            ) {
-                element = element.parentNode
-            }
+                (element = element.parentElement) &&
+                !(element.matches || element.matchesSelector).call(
+                    element,
+                    selector
+                )
+            );
 
             return element
+        }
+
+        const findRootNode = function(id, cls) {
+            return findAncestor(
+                document.querySelector(`[phpx-id='${id}']`),
+                "[phpx-class]"
+            )
         }
 
         const removeExtraAttributes = function(root) {
@@ -91,14 +97,17 @@ if (!window.PhpxLiveSocket) {
 
         document.body.addEventListener("click", function(e) {
             if (e.target.hasAttribute("phpx-click")) {
-                e.preventDefault()
+                const [method, arguments] = e.target
+                    .getAttribute("phpx-click")
+                    .split(":")
 
                 socket.send(
                     JSON.stringify({
                         type: "phpx-click",
                         id: e.target.getAttribute("phpx-id"),
                         class: e.target.getAttribute("phpx-class"),
-                        method: e.target.getAttribute("phpx-click")
+                        method,
+                        arguments
                     })
                 )
             }
@@ -132,12 +141,17 @@ if (!window.PhpxLiveSocket) {
 
         document.body.addEventListener("keypress", function(e) {
             if (e.target.hasAttribute("phpx-enter") && e.key === "Enter") {
+                const [method, arguments] = e.target
+                    .getAttribute("phpx-enter")
+                    .split(":")
+
                 socket.send(
                     JSON.stringify({
                         type: "phpx-enter",
                         id: e.target.getAttribute("phpx-id"),
                         class: e.target.getAttribute("phpx-class"),
-                        method: e.target.getAttribute("phpx-enter")
+                        method,
+                        arguments
                     })
                 )
             }

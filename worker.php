@@ -54,7 +54,11 @@ $websocket = new class extends Websocket
                 ? $this->bindings[$json->class]
                 : [];
 
-            $this->instances[$json->class]->{$json->method}($bindings);
+            $arguments = !empty($json->arguments)
+                ? explode(",", (string) $json->arguments)
+                : [];
+
+            $this->instances[$json->class]->{$json->method}($bindings, ...$arguments);
 
             $data = json_encode([
                 "cause" => $json->type,
