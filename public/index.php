@@ -10,6 +10,7 @@ if (PHP_SAPI == "cli-server") {
 
 require __DIR__ . "/../vendor/autoload.php";
 
+use App\CombinedResponder;
 use App\CounterResponder;
 use App\HomeResponder;
 use App\TodosResponder;
@@ -33,6 +34,11 @@ $app->get("/counter", function(Request $request, Response $response) {
 
 $app->get("/todos", function(Request $request, Response $response) {
     $response->getBody()->write((new TodosResponder())->render());
+    return $response;
+});
+
+$app->get("/combined", function(Request $request, Response $response) {
+    $response->getBody()->write((new CombinedResponder())->render());
     return $response;
 });
 
