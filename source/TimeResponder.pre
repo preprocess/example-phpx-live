@@ -15,10 +15,19 @@ class TimeResponder implements Updates
     {
         $this->time = date("H:i:s");
 
-        Loop::repeat(750, function() {
+        $seconds = 0;
+
+        $this->timeout = $this->setInterval(function() use (&$seconds) {
             $this->time = date("H:i:s");
             $this->update($marker = "time123");
-        });
+
+            $seconds++;
+
+            if ($seconds > 10) {
+                print "Stopping interval on TimeResponder" . PHP_EOL;
+                $this->clearTimeout($this->timeout);
+            }
+        }, 250);
     }
 
     public function render()
@@ -31,4 +40,5 @@ class TimeResponder implements Updates
         );
     }
 }
+
 

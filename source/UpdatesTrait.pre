@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Amp\Loop;
 use Closure;
 
 trait UpdatesTrait
@@ -27,5 +28,20 @@ trait UpdatesTrait
             "data" => (string) $this->render(),
             "class" => get_class($this),
         ]));
+    }
+
+    public function setTimeout(callable $delayed, int $ms, $data = null): string
+    {
+        return Loop::delay($ms, $delayed);
+    }
+
+    public function setInterval(callable $delayed, int $ms, $data = null): string
+    {
+        return Loop::repeat($ms, $delayed);
+    }
+
+    public function clearTimeout(string $watcherId)
+    {
+        Loop::cancel($watcherId);
     }
 }

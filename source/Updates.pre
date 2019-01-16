@@ -8,4 +8,7 @@ interface Updates
 {
     public function setSender(Closure $sender);
     public function update(string $marker);
+    public function setTimeout(callable $delayed, int $ms, $data = null): string;
+    public function setInterval(callable $delayed, int $ms, $data = null): string;
+    public function clearTimeout(string $watcherId);
 }
