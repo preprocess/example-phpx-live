@@ -46,10 +46,6 @@ socket.addEventListener("open", function() {
             element.innerHTML = json.data
 
             flushBinds()
-
-            if (json.cause) {
-                document.querySelector(`[phpx-id='${json.cause}']`)
-            }
         }
     })
 

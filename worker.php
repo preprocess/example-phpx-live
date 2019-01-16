@@ -38,9 +38,6 @@ $websocket = new class extends Websocket
         $text = yield $message->buffer();
         $json = json_decode($text);
 
-        // print $json . PHP_EOL;
-        // exit;
-
         if ($json->type === "phpx-init") {
             foreach ($json->classes as $class) {
                 if (class_exists($class)) {
@@ -52,10 +49,6 @@ $websocket = new class extends Websocket
 
         if ($json->type === "phpx-click" || $json->type === "phpx-enter") {
             print "{$json->class}.{$json->method} triggered with {$json->type} from {$clientId}" . PHP_EOL;
-
-            // print $class . PHP_EOL;
-            // print $method . PHP_EOL;
-            // exit;
 
             $bindings = isset($this->bindings[$json->class])
                 ? $this->bindings[$json->class]
@@ -70,8 +63,6 @@ $websocket = new class extends Websocket
                 "class" => $json->class,
                 "id" => $json->id,
             ]);
-    
-            // print "Sending {$data} for {$clientId}" . PHP_EOL;
 
             yield $this->send($data, $clientId);
         }
