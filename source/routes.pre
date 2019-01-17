@@ -1,0 +1,33 @@
+<?php
+
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as Response;
+use Slim\App;
+use function App\render;
+
+return function(App $app) {
+    $app->get("/", function(Request $request, Response $response) {
+        $response->getBody()->write(<App.Responder.HomeResponder />);
+        return $response;
+    });
+    
+    $app->get("/counter", function(Request $request, Response $response) {
+        $response->getBody()->write(<App.Responder.CounterResponder />);
+        return $response;
+    });
+    
+    $app->get("/todos", function(Request $request, Response $response) {
+        $response->getBody()->write(<App.Responder.TodosResponder />);
+        return $response;
+    });
+    
+    $app->get("/combined", function(Request $request, Response $response) {
+        $response->getBody()->write(<App.Responder.CombinedResponder />);
+        return $response;
+    });
+    
+    $app->get("/time", function(Request $request, Response $response) {
+        $response->getBody()->write(<App.Responder.TimeResponder />);
+        return $response;
+    });
+};

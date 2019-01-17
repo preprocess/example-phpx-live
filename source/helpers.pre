@@ -2,49 +2,55 @@
 
 namespace App;
 
+use Closure;
+use Exception;
 use Ramsey\Uuid\Uuid;
 use function Pre\Phpx\classMatching;
 use function Pre\Phpx\Html\propsFrom;
 use function Pre\Phpx\Html\render as renderHTML;
 
-function render($name, $props)
+function render($name, $props = [])
 {
-    // first we find the class that rendered this component
+    $props = (array) $props;
 
-    $class = false;
-    $frames = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
+    if (isset($props["phpx-class"])) {
+        $class = $props["phpx-class"];
+    } else {
+        $class = false;
+        $frames = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
 
-    foreach ($frames as $frame) {
-        if (isset($frame["class"])) {
-            $class = $frame["class"];
-            break;
+        foreach ($frames as $frame) {
+            if (isset($frame["class"])) {
+                $class = $frame["class"];
+                break;
+            }
         }
     }
 
-    // ...then we enhance the props to support linking
+    if (class_exists($name)) {
+        $object = new $name($props);
+        $object->props["phpx-id"] = spl_object_hash($object);
 
-    $uuid = Uuid::uuid4()->toString();
+        $wrapped = new ResponderComponent($object, $props);
+        $wrapped->render();
 
-    if ($class) {
-        $props["phpx-class"] = $class;
-    } else {
-        unset($props["phpx-click"]);
-        unset($props["phpx-enter"]);
+        return $wrapped;
     }
 
-    if (isset($props["phpx-click"]) || isset($props["phpx-enter"])) {
-        $props["phpx-id"] = $uuid;
-    }
+    return new class($name, $props) extends Component
+    {
+        public $name;
+        public $props;
 
-    // ...then we see if this component exists as a class
+        public function __construct($name, array $props = [])
+        {
+            $this->name = $name;
+            $this->props = $props;
+        }
 
-    if (class_exists("\\App\\{$name}")) {
-        $class = "\\App\\{$name}";
-        $object = new $class($props);
-        return $object->render();
-    }
-
-    // ...else it's HTML
-
-    return renderHTML($name, $props);
+        public function render()
+        {
+            return renderHTML($this->name, $this->props);
+        }
+    };
 }

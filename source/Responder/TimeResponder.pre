@@ -1,13 +1,12 @@
 <?php
 
-namespace App;
+namespace App\Responder;
 
+use App\Component;
 use function App\render;
 
-class TimeResponder
+class TimeResponder extends Component
 {
-    use CodeForUpdating;
-
     private $time = date("H:i:s");
 
     public function componentDidMount()
@@ -16,7 +15,7 @@ class TimeResponder
 
         $this->timeout = $this->setInterval(() ~> {
             $this->time = date("H:i:s");
-            $this->update($marker = "time-responder-marker");
+            $this->update();
 
             $seconds++;
 
@@ -29,7 +28,7 @@ class TimeResponder
     public function render()
     {
         return (
-            <div phpx-marker={"time-responder-marker"}>
+            <div>
                 <script src={"/runtime.js"}></script>
                 time: {$this->time}
             </div>

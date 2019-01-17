@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Responder;
+
+use App\Component;
+use function App\render;
+
+class CombinedResponder extends Component
+{
+    public function render()
+    {
+        return (
+            <div>
+                <App.Responder.CounterResponder />
+                <App.Responder.TodosResponder />
+                <App.Responder.TimeResponder />
+            </div>
+        );
+    }
+}

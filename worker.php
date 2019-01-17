@@ -16,12 +16,14 @@ use Amp\Socket;
 use App\Updates;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use function App\render;
+use function Pre\Plugin\process;
 
-\Pre\Plugin\process(__DIR__ . "/source/helpers.pre");
+process(__DIR__ . "/source/helpers.pre");
 
 $websocket = new class extends Websocket
 {
-    private $classes = [];
+    private $roots = [];
     private $binds = [];
     private $senders = [];
 
@@ -44,64 +46,61 @@ $websocket = new class extends Websocket
         $text = yield $message->buffer();
         $json = json_decode($text);
 
-        if (!isset($this->classes[$clientId])) {
-            $this->classes[$clientId] = [];
+        if (!isset($this->roots[$clientId])) {
+            $this->roots[$clientId] = [];
         }
 
         if (!isset($this->binds[$clientId])) {
             $this->binds[$clientId] = [];
         }
 
-        if ($json->type === "phpx-init") {
-            foreach ($json->classes as $class) {
-                if (class_exists($class)) {
-                    $this->classes[$clientId][$class] = new $class();
+        if ($json->type === "phpx-root") {
+            print "Creating {$json->id} for {$clientId}" . PHP_EOL;
 
-                    if (method_exists($this->classes[$clientId][$class] , "setSender")) {
-                        $this->classes[$clientId][$class]->setSender($this->senders[$clientId]);
-                    }
+            $component = unserialize(base64_decode($json->root));
+            $component->props["phpx-id"] = $json->id;
+            $component->props["phpx-sender"] = $this->senders[$clientId];
 
-                    if (method_exists($this->classes[$clientId][$class], "componentDidMount")) {
-                        $this->classes[$clientId][$class]->componentDidMount();
-                    }
+            $this->roots[$clientId][$json->id] = $component;
 
-                    print "Creating {$class} for {$clientId}" . PHP_EOL;
-                }
-            }
+            $component->render();
+            $component->componentDidMount();
+
+            $responderClass = get_class($component);
+            $objectClass = get_class($component->object);
+
+            print "Created {$json->id} ({$responderClass}<{$objectClass}>) for {$clientId}" . PHP_EOL;
         }
 
         if ($json->type === "phpx-click" || $json->type === "phpx-enter") {
-            print "{$json->class}.{$json->method} triggered with {$json->type} from {$clientId}" . PHP_EOL;
+            print "{$json->root}.{$json->method} triggered with {$json->type} from {$clientId}" . PHP_EOL;
 
-            $binds = isset($this->binds[$clientId][$json->class])
-                ? $this->binds[$clientId][$json->class]
+            $binds = isset($this->binds[$clientId][$json->root])
+                ? $this->binds[$clientId][$json->root]
                 : [];
 
             $arguments = !empty($json->arguments)
                 ? explode(",", (string) $json->arguments)
                 : [];
 
-            $this->classes[$clientId][$json->class]->{$json->method}($binds, ...$arguments);
+            $this->roots[$clientId][$json->root]->{$json->method}($binds, ...$arguments);
 
             $data = json_encode([
                 "cause" => $json->type,
                 "type" => "phpx-render",
-                "data" => (string) $this->classes[$clientId][$json->class]->render(),
-                "class" => $json->class,
-                "id" => $json->id,
+                "data" => (string) $this->roots[$clientId][$json->root]->render(),
+                "root" => $json->root,
             ]);
 
             $this->send($data, $clientId);
         }
 
         if ($json->type === "phpx-bind") {
-            // print "{$json->class}.{$json->key} = '{$json->value}' from {$clientId}" . PHP_EOL;
-
-            if (!isset($this->binds[$clientId][$json->class])) {
-                $this->binds[$clientId][$json->class] = [];
+            if (!isset($this->binds[$clientId][$json->root])) {
+                $this->binds[$clientId][$json->root] = [];
             }
 
-            $this->binds[$clientId][$json->class][$json->key] = $json->value;
+            $this->binds[$clientId][$json->root][$json->key] = $json->value;
         }
     }
 

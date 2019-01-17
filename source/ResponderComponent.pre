@@ -1,0 +1,62 @@
+<?php
+
+namespace App;
+
+class ResponderComponent extends Component
+{
+    public $object;
+    public $props;
+
+    public function __construct($object, array $props = [])
+    {
+        $this->object = $object;
+        $this->props = $props;
+
+        $this->object->parent = $this;
+    }
+
+    public function __call(string $method, array $parameters = [])
+    {
+        return $this->object->{$method}(...$parameters);
+    }
+
+    public function __get(string $property)
+    {
+        return $this->object->{$property};
+    }
+
+    public function __set(string $property, $value)
+    {
+        $this->object->{$property} = $value;
+    }
+
+    public function componentDidMount()
+    {
+        $this->object->componentDidMount();
+    }
+
+    public function render()
+    {
+        if (method_exists($this->object, "setProps")) {
+            $this->object->setProps($this->props);
+        }
+
+        $rendered = $this->object->render();
+
+        if (method_exists($rendered, "setProps")) {
+            $props = $rendered->props;
+
+            if (!isset($this->props["phpx-id"])) {
+                $props["phpx-id"] = spl_object_hash($this);
+                $props["phpx-root"] = base64_encode(serialize($this));
+            } else {
+                $props["phpx-id"] = $this->props["phpx-id"];
+                $props["phpx-root"] = null;
+            }
+
+            $rendered->setProps($props);
+        }
+
+        return $rendered;
+    }
+}

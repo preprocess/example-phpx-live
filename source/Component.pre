@@ -1,0 +1,95 @@
+<?php
+
+namespace App;
+
+use Amp\Loop;
+use Closure;
+
+class Component
+{
+    public $props;
+    public $sender;
+    public $anchor;
+    public $parent;
+
+    public function __construct($props = [])
+    {
+        $this->props = (array) $props;
+    }
+
+    public function setSender(Closure $sender): self
+    {
+        $this->sender = $sender;
+        return $this;
+    }
+
+    public function setProps(array $props): self
+    {
+        $this->props = $props;
+        return $this;
+    }
+
+    public function setAnchor(string $anchor): self
+    {
+        $this->anchor = $anchor;
+        return $this;
+    }
+
+    public function componentDidMount()
+    {
+        // ...do nothing
+    }
+
+    public function update()
+    {
+        if (!defined("PHPX_LIVE_IN_WORKER")) {
+            return;
+        }
+
+        if (!isset($this->parent->props["phpx-sender"]) || !isset($this->parent->props["phpx-id"])) {
+            return;
+        }
+
+        call_user_func(
+            $this->parent->props["phpx-sender"],
+            json_encode([
+                "cause" => "phpx-update",
+                "type" => "phpx-render",
+                "data" => (string) $this->parent->render(),
+                "root" => $this->parent->props["phpx-id"],
+            ])
+        );
+    }
+
+    public function setTimeout(callable $delayed, int $ms): string
+    {
+        if (!defined("PHPX_LIVE_IN_WORKER")) {
+            return "noop";
+        }
+
+        return Loop::delay($ms, $delayed);
+    }
+
+    public function setInterval(callable $delayed, int $ms): string
+    {
+        if (!defined("PHPX_LIVE_IN_WORKER")) {
+            return "noop";
+        }
+
+        return Loop::repeat($ms, $delayed);
+    }
+
+    public function clearTimeout(string $watcherId)
+    {
+        if (!defined("PHPX_LIVE_IN_WORKER")) {
+            return;
+        }
+
+        Loop::cancel($watcherId);
+    }
+
+    public function __toString()
+    {
+        return (string) $this->render();
+    }
+}
