@@ -3,9 +3,14 @@
 namespace App;
 
 use Ramsey\Uuid\Uuid;
+use function Pre\Phpx\classMatching;
+use function Pre\Phpx\Html\propsFrom;
 use function Pre\Phpx\Html\render as renderHTML;
 
-function render($type, $props) {
+function render($name, $props)
+{
+    // first we find the class that rendered this component
+
     $class = false;
     $frames = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
 
@@ -16,37 +21,30 @@ function render($type, $props) {
         }
     }
 
-    return new class($type, $props, $class)
-    {
-        public $type;
-        public $props;
-        public $class;
-        public $uuid;
+    // ...then we enhance the props to support linking
 
-        public function __construct($type, $props, $class = null)
-        {
-            $this->type = $type;
-            $this->props = $props;
-            $this->class = $class;
+    $uuid = Uuid::uuid4()->toString();
 
-            $uuid = Uuid::uuid4();
-            $this->uuid = $uuid->toString();
-        }
+    if ($class) {
+        $props["phpx-class"] = $class;
+    } else {
+        unset($props["phpx-click"]);
+        unset($props["phpx-enter"]);
+    }
 
-        public function __toString()
-        {
-            if ($this->class) {
-                $this->props["phpx-class"] = $this->class;
-            } else {
-                unset($this->props["phpx-click"]);
-                unset($this->props["phpx-enter"]);
-            }
+    if (isset($props["phpx-click"]) || isset($props["phpx-enter"])) {
+        $props["phpx-id"] = $uuid;
+    }
 
-            if (isset($this->props["phpx-click"]) || isset($this->props["phpx-enter"])) {
-                $this->props["phpx-id"] = $this->uuid;
-            }
+    // ...then we see if this component exists as a class
 
-            return renderHTML($this->type, $this->props);
-        }
-    };
+    if (class_exists("\\App\\{$name}")) {
+        $class = "\\App\\{$name}";
+        $object = new $class($props);
+        return $object->render();
+    }
+
+    // ...else it's HTML
+
+    return renderHTML($name, $props);
 }

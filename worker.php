@@ -1,6 +1,8 @@
 <?php
 
-require __DIR__ . "/vendor/autoload.php";
+define("PHPX_LIVE_IN_WORKER", true);
+
+require_once __DIR__ . "/vendor/autoload.php";
 
 use Amp\Http\Server\Options;
 use Amp\Http\Server\Request;
@@ -55,8 +57,12 @@ $websocket = new class extends Websocket
                 if (class_exists($class)) {
                     $this->classes[$clientId][$class] = new $class();
 
-                    if ($this->classes[$clientId][$class] instanceof Updates) {
+                    if (method_exists($this->classes[$clientId][$class] , "setSender")) {
                         $this->classes[$clientId][$class]->setSender($this->senders[$clientId]);
+                    }
+
+                    if (method_exists($this->classes[$clientId][$class], "componentDidMount")) {
+                        $this->classes[$clientId][$class]->componentDidMount();
                     }
 
                     print "Creating {$class} for {$clientId}" . PHP_EOL;
@@ -126,5 +132,5 @@ $server = new Server($sockets, $router, $logger, $options);
 Loop::run(function() use ($server) {
     yield $server->start();
 
-    print "Server listening" . PHP_EOL;
+    print "Starting the worker" . PHP_EOL;
 });

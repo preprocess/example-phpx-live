@@ -2,13 +2,65 @@
 
 namespace App;
 
+use Amp\Loop;
 use Closure;
 
-interface Updates
+trait Updates
 {
-    public function setSender(Closure $sender);
-    public function update(string $marker);
-    public function setTimeout(callable $delayed, int $ms, $data = null): string;
-    public function setInterval(callable $delayed, int $ms, $data = null): string;
-    public function clearTimeout(string $watcherId);
+    private $sender;
+
+    public function setSender(Closure $sender)
+    {
+        $this->sender = $sender;
+    }
+
+    public function getSender(): Closure
+    {
+        return $this->sender;
+    }
+
+    public function update(string $marker)
+    {
+        if (!defined("PHPX_LIVE_IN_WORKER")) {
+            return;
+        }
+
+        call_user_func(
+            $this->sender,
+            json_encode([
+                "cause" => "phpx-update",
+                "type" => "phpx-render",
+                "marker" => $marker,
+                "data" => (string) $this->render(),
+                "class" => get_class($this),
+            ])
+        );
+    }
+
+    public function setTimeout(callable $delayed, int $ms): string
+    {
+        if (!defined("PHPX_LIVE_IN_WORKER")) {
+            return "noop";
+        }
+
+        return Loop::delay($ms, $delayed);
+    }
+
+    public function setInterval(callable $delayed, int $ms): string
+    {
+        if (!defined("PHPX_LIVE_IN_WORKER")) {
+            return "noop";
+        }
+
+        return Loop::repeat($ms, $delayed);
+    }
+
+    public function clearTimeout(string $watcherId)
+    {
+        if (!defined("PHPX_LIVE_IN_WORKER")) {
+            return;
+        }
+
+        Loop::cancel($watcherId);
+    }
 }

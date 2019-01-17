@@ -5,40 +5,35 @@ namespace App;
 use Amp\Loop;
 use function App\render;
 
-class TimeResponder implements Updates
+class TimeResponder
 {
-    use UpdatesTrait;
+    use Updates;
 
-    private $time;
+    private $time = date("H:i:s");
 
-    public function __construct()
+    public function componentDidMount()
     {
-        $this->time = date("H:i:s");
-
         $seconds = 0;
 
-        $this->timeout = $this->setInterval(function() use (&$seconds) {
+        $this->timeout = $this->setInterval(() ~> {
             $this->time = date("H:i:s");
-            $this->update($marker = "time123");
+            $this->update($marker = "time-responder-marker");
 
             $seconds++;
 
-            if ($seconds > 10) {
-                print "Stopping interval on TimeResponder" . PHP_EOL;
+            if ($seconds > 30) {
                 $this->clearTimeout($this->timeout);
             }
-        }, 250);
+        }, 1000);
     }
 
     public function render()
     {
         return (
-            <div phpx-marker={"time123"}>
+            <div phpx-marker={"time-responder-marker"}>
                 <script src={"/runtime.js"}></script>
                 time: {$this->time}
             </div>
         );
     }
 }
-
-

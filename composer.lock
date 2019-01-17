@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "280ef3baae031bf1293af8fb483acadb",
+    "content-hash": "bfd87dbf18a6d97ea87767e5ad209b3e",
     "packages": [
         {
             "name": "amphp/amp",
@@ -1660,6 +1660,46 @@
                 "MIT"
             ],
             "time": "2018-10-08T15:34:29+00:00"
+        },
+        {
+            "name": "pre/property-loaders",
+            "version": "0.6.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/preprocess/pre-property-loaders.git",
+                "reference": "0bd0a8a72e23643a1a7e50ba6331f1350dc1499d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/preprocess/pre-property-loaders/zipball/0bd0a8a72e23643a1a7e50ba6331f1350dc1499d",
+                "reference": "0bd0a8a72e23643a1a7e50ba6331f1350dc1499d",
+                "shasum": ""
+            },
+            "require": {
+                "pre/plugin": "^0.11.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.0|^6.0"
+            },
+            "type": "pre-macro",
+            "extra": {
+                "macros": [
+                    "source/macros.yay"
+                ]
+            },
+            "autoload": {
+                "files": [
+                    "source/expanders.php"
+                ],
+                "psr-4": {
+                    "Pre\\PropertyLoaders\\": "source"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "time": "2018-10-08T16:35:31+00:00"
         },
         {
             "name": "pre/short-closures",

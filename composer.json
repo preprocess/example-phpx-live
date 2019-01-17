@@ -8,6 +8,7 @@
         "amphp/websocket-server": "dev-master",
         "monolog/monolog": "^1.24",
         "pre/phpx-html": "^0.2.10",
+        "pre/property-loaders": "^0.6.1",
         "pre/short-closures": "^0.7.1",
         "ramsey/uuid": "^3.8",
         "slim/slim": "^3.12"
