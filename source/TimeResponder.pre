@@ -2,7 +2,6 @@
 
 namespace App;
 
-use Amp\Loop;
 use function App\render;
 
 class TimeResponder
