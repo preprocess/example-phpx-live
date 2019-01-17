@@ -1,0 +1,22 @@
+<?php
+
+namespace App;
+
+use function Pre\Phpx\Html\render;
+
+class HtmlComponent extends Component
+{
+    public $name;
+    public $props;
+
+    public function __construct($name, array $props = [])
+    {
+        $this->name = $name;
+        $this->props = $props;
+    }
+
+    public function render()
+    {
+        return render($this->name, $this->props);
+    }
+}

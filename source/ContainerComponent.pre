@@ -2,7 +2,7 @@
 
 namespace App;
 
-class ResponderComponent extends Component
+class ContainerComponent extends Component
 {
     public $object;
     public $props;

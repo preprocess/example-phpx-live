@@ -7,7 +7,7 @@ use function App\render;
 
 class TimeResponder extends Component
 {
-    private $time = date("H:i:s");
+    private $time;
 
     public function componentDidMount()
     {
@@ -30,7 +30,7 @@ class TimeResponder extends Component
         return (
             <div>
                 <script src={"/runtime.js"}></script>
-                time: {$this->time}
+                time: {$this->time ? $this->time : date("H:i:s")}
             </div>
         );
     }
