@@ -6,7 +6,7 @@ use function App\render;
 
 class TimeResponder
 {
-    use Updates;
+    use CodeForUpdating;
 
     private $time = date("H:i:s");
 

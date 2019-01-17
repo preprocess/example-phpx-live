@@ -5,7 +5,7 @@ namespace App;
 use Amp\Loop;
 use Closure;
 
-trait Updates
+trait CodeForUpdating
 {
     private $sender;
 
