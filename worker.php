@@ -58,18 +58,18 @@ $websocket = new class extends Websocket
             print "Creating {$json->id} for {$clientId}" . PHP_EOL;
 
             $component = unserialize(base64_decode($json->root));
-            $component->props["phpx-id"] = $json->id;
-            $component->props["phpx-sender"] = $this->senders[$clientId];
+
+            $component->setId($json->id);
+            $component->setSender($this->senders[$clientId]);
 
             $this->roots[$clientId][$json->id] = $component;
 
             $component->render();
             $component->componentDidMount();
 
-            $responderClass = get_class($component);
-            $objectClass = get_class($component->object);
+            $class = get_class($component);
 
-            print "Created {$json->id} ({$responderClass}<{$objectClass}>) for {$clientId}" . PHP_EOL;
+            print "Created {$json->id} ({$class}) for {$clientId}" . PHP_EOL;
         }
 
         if ($json->type === "phpx-click" || $json->type === "phpx-enter") {
@@ -83,12 +83,19 @@ $websocket = new class extends Websocket
                 ? explode(",", (string) $json->arguments)
                 : [];
 
-            $this->roots[$clientId][$json->root]->{$json->method}($binds, ...$arguments);
+            $object = $this->roots[$clientId][$json->root];
+            $object->{$json->method}($binds, ...$arguments);
+
+            if ($object instanceof StatefulComponent) {
+                $object->statefulRender();
+            } else {
+                $object->render();
+            }
 
             $data = json_encode([
                 "cause" => $json->type,
                 "type" => "phpx-render",
-                "data" => (string) $this->roots[$clientId][$json->root]->render(),
+                "data" => (string) $object,
                 "root" => $json->root,
             ]);
 

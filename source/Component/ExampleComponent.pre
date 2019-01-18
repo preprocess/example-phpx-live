@@ -1,0 +1,33 @@
+<?php
+
+namespace App\Component;
+
+use App\StatelessComponent;
+use function App\render;
+
+class ExampleComponent extends StatelessComponent
+{
+    public function render()
+    {
+        $props = $this->props;
+
+        $title = isset($props["title"])
+            ? $props["title"] 
+            : "Example";
+
+        $children = isset($props["children"])
+            ? $props["children"]
+            : "";
+
+        return (
+            <div>
+                <link rel={"stylesheet"} href={"https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css"} />
+                <script src={"/runtime.js"}></script>
+                <div className={"p-4 font-sans text-base text-grey-darkest rounded bg-grey-lightest border-2 border-grey-lighter m-8"}>
+                    <h2 className={"mb-4"}>{$title}</h2>
+                    {$children}
+                </div>
+            </div>
+        );
+    }
+}

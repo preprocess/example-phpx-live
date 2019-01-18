@@ -2,10 +2,13 @@
 
 namespace App\Responder;
 
-class HomeResponder
+use App\StatelessComponent;
+use function App\render;
+
+class HomeResponder extends StatelessComponent
 {
     public function render()
     {
-        return "hello world";
+        return <div>hello world</div>;
     }
 }

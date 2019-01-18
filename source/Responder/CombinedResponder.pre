@@ -2,10 +2,10 @@
 
 namespace App\Responder;
 
-use App\Component;
+use App\StatelessComponent;
 use function App\render;
 
-class CombinedResponder extends Component
+class CombinedResponder extends StatelessComponent
 {
     public function render()
     {

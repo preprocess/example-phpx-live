@@ -7,13 +7,7 @@ function render($name, $props = [])
     $props = (array) $props;
 
     if (class_exists($name)) {
-        $object = new $name($props);
-        $object->props["phpx-id"] = spl_object_hash($object);
-
-        $wrapped = new ContainerComponent($object, $props);
-        $wrapped->render();
-
-        return $wrapped;
+        return new $name($props);
     }
 
     return new HtmlComponent($name, $props);

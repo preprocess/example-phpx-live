@@ -17,6 +17,11 @@ class HtmlComponent extends Component
 
     public function render()
     {
+        // ...do nothing
+    }
+
+    public function __toString()
+    {
         return render($this->name, $this->props);
     }
 }

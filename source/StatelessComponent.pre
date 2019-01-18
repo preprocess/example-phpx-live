@@ -1,0 +1,33 @@
+<?php
+
+namespace App;
+
+use Exception;
+
+abstract class StatelessComponent extends Component
+{
+    public function update()
+    {
+        throw new Exception("Stateless components cannot update themselves");
+    }
+
+    public function componentDidMount()
+    {
+        throw new Exception("Stateless components cannot use lifecycle methods");
+    }
+
+    public function setTimeout(callable $delayed, int $ms): string
+    {
+        throw new Exception("Stateless components cannot use timer methods");
+    }
+
+    public function setInterval(callable $delayed, int $ms): string
+    {
+        throw new Exception("Stateless components cannot use timer methods");
+    }
+
+    public function clearTimeout(string $watcherId)
+    {
+        throw new Exception("Stateless components cannot use timer methods");
+    }
+}

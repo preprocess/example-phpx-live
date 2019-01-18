@@ -1,0 +1,108 @@
+<?php
+
+namespace App;
+
+use Amp\Loop;
+use Closure;
+
+abstract class StatefulComponent extends Component
+{
+    protected $id;
+    protected $sender;
+
+    public function __construct(...$params)
+    {
+        parent::__construct(...$params);
+
+        $this->id = spl_object_hash($this);
+    }
+
+    public function setId(string $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    public function getId(): ?string
+    {
+        return $this->id;
+    }
+
+    public function setSender(Closure $sender): self
+    {
+        $this->sender = $sender;
+        return $this;
+    }
+
+    public function getSender(): ?Closure
+    {
+        return $this->sender;
+    }
+
+    public function update()
+    {
+        if (!defined("PHPX_LIVE_IN_WORKER")) {
+            return;
+        }
+
+        if (is_null($this->sender) || is_null($this->id)) {
+            return;
+        }
+
+        call_user_func(
+            $this->sender,
+            json_encode([
+                "cause" => "phpx-update",
+                "type" => "phpx-render",
+                "data" => (string) $this->statefulRender(),
+                "root" => $this->id,
+            ])
+        );
+    }
+
+    public function componentDidMount()
+    {
+        // ...do nothing
+    }
+
+    public function setTimeout(callable $delayed, int $ms): string
+    {
+        if (!defined("PHPX_LIVE_IN_WORKER")) {
+            return "noop";
+        }
+
+        return Loop::delay($ms, $delayed);
+    }
+
+    public function setInterval(callable $delayed, int $ms): string
+    {
+        if (!defined("PHPX_LIVE_IN_WORKER")) {
+            return "noop";
+        }
+
+        return Loop::repeat($ms, $delayed);
+    }
+
+    public function clearTimeout(string $watcherId)
+    {
+        if (!defined("PHPX_LIVE_IN_WORKER")) {
+            return;
+        }
+
+        Loop::cancel($watcherId);
+    }
+
+    public function statefulRender()
+    {
+        return (
+            <div phpx-id={$this->id} phpx-root={defined("PHPX_LIVE_IN_WORKER") ? null : base64_encode(serialize($this))}>
+                {$this->render()}
+            </div>
+        );
+    }
+
+    public function __toString()
+    {
+        return (string) $this->statefulRender();
+    }
+}

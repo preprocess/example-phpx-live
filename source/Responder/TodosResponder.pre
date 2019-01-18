@@ -2,10 +2,10 @@
 
 namespace App\Responder;
 
-use App\Component;
+use App\StatefulComponent;
 use function App\render;
 
-class TodosResponder extends Component
+class TodosResponder extends StatefulComponent
 {
     private $todos = [];
 
@@ -25,25 +25,29 @@ class TodosResponder extends Component
     public function render()
     {
         return (
-            <div>
-                <script src={"/runtime.js"}></script>
-                <input type={"text"} phpx-bind={"todo"} phpx-enter={"addTodo"} />
-                <ol>
+            <App.Component.ExampleComponent title={"Todos"}>
+                <input type={"text"} phpx-bind={"todo"} phpx-enter={"addTodo"} className={"rounded border border-grey-light py-2 px-4"} />
+                <App.Component.ButtonComponent phpx-click={"addTodo"} className={"bg-green hover:bg-green-dark ml-2"}>
+                    +
+                </App.Component.ButtonComponent>
+                <ol className={"mt-4 leading-loose"}>
                     {array_map(
                         $todo ~> $this->renderTodo($todo),
                         $this->todos
                     )}
                 </ol>
-            </div>
+            </App.Component.ExampleComponent>
         );
     }
 
     public function renderTodo(string $todo)
     {
         return (
-            <li>
+            <li className={"mb-1"}>
                 {$todo}
-                <button phpx-click={"removeTodo:" . md5($todo)}>remove</button>
+                <App.Component.ButtonComponent phpx-click={"removeTodo:" . md5($todo)} className={"bg-red hover:bg-red-dark ml-1"} style={["transform" => "scale(0.8)"]}>
+                    -
+                </App.Component.ButtonComponent>
             </li>
         );
     }

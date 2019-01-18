@@ -2,10 +2,10 @@
 
 namespace App\Responder;
 
-use App\Component;
+use App\StatefulComponent;
 use function App\render;
 
-class CounterResponder extends Component
+class CounterResponder extends StatefulComponent
 {
     private $counter = 0;
 
@@ -22,12 +22,20 @@ class CounterResponder extends Component
     public function render()
     {
         return (
-            <div>
-                <script src={"/runtime.js"}></script>
-                counter: {$this->counter}
-                <button phpx-click={"increment"}>+</button>
-                <button phpx-click={"decrement"}>-</button>
-            </div>
+            <App.Component.ExampleComponent title={"Counter"}>
+                <div className={"mb-4"}>
+                    <label className={"font-semibold mr-1"}>
+                        Count:
+                    </label>
+                    {$this->counter}
+                </div>
+                <App.Component.ButtonComponent phpx-click={"increment"} className={"bg-green hover:bg-green-dark mr-2"}>
+                    ++
+                </App.Component.ButtonComponent>
+                <App.Component.ButtonComponent phpx-click={"decrement"} className={"bg-blue hover:bg-blue-dark"}>
+                    --
+                </App.Component.ButtonComponent>
+            </App.Component.ExampleComponent>
         );
     }
 }

@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Component;
+
+use App\StatelessComponent;
+use function App\render;
+
+class ButtonComponent extends StatelessComponent
+{
+    public function render()
+    {
+        $props = $this->props;
+
+        $click = isset($props["phpx-click"])
+            ? $props["phpx-click"]
+            : null;
+
+        $className = isset($props["className"])
+            ? $props["className"]
+            : "";
+
+        $style = isset($props["style"])
+            ? $props["style"]
+            : [];
+
+        $children = isset($props["children"])
+            ? $props["children"]
+            : "";
+
+        return (
+            <button
+                phpx-click={$click}
+                className={[
+                    "text-white tracking-wide font-mono font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline",
+                    $className,
+                ]}
+                style={$style}
+            >
+                {$children}
+            </button>
+        );
+    }
+}

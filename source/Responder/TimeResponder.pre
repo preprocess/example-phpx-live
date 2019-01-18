@@ -2,36 +2,35 @@
 
 namespace App\Responder;
 
-use App\Component;
+use App\StatefulComponent;
 use function App\render;
 
-class TimeResponder extends Component
+class TimeResponder extends StatefulComponent
 {
     private $time;
 
     public function componentDidMount()
     {
-        $seconds = 0;
+        // $seconds = 0;
 
         $this->timeout = $this->setInterval(() ~> {
             $this->time = date("H:i:s");
             $this->update();
 
-            $seconds++;
+            // $seconds++;
 
-            if ($seconds > 30) {
-                $this->clearTimeout($this->timeout);
-            }
+            // if ($seconds > 30) {
+            //     $this->clearTimeout($this->timeout);
+            // }
         }, 1000);
     }
 
     public function render()
     {
         return (
-            <div>
-                <script src={"/runtime.js"}></script>
-                time: {$this->time ? $this->time : date("H:i:s")}
-            </div>
+            <App.Component.ExampleComponent title={"Time"}>
+                {$this->time ? $this->time : date("H:i:s")}
+            </App.Component.ExampleComponent>
         );
     }
 }
