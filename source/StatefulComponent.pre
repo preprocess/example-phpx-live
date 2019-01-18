@@ -4,17 +4,18 @@ namespace App;
 
 use Amp\Loop;
 use Closure;
+use Ramsey\Uuid\Uuid;
 
 abstract class StatefulComponent extends Component
 {
+    protected $props;
     protected $id;
     protected $sender;
 
-    public function __construct(...$params)
+    public function __construct($props)
     {
-        parent::__construct(...$params);
-
-        $this->id = spl_object_hash($this);
+        $this->props = $props;
+        $this->id = Uuid::uuid4()->toString();
     }
 
     public function setId(string $id): self
@@ -45,7 +46,7 @@ abstract class StatefulComponent extends Component
             return;
         }
 
-        if (is_null($this->sender) || is_null($this->id)) {
+        if (is_null($this->id) || is_null($this->sender)) {
             return;
         }
 

@@ -11,17 +11,6 @@ abstract class Component
         $this->props = (array) $props;
     }
 
-    public function setProps(array $props): self
-    {
-        $this->props = $props;
-        return $this;
-    }
-
-    public function getProps(): array
-    {
-        return $this->props;
-    }
-
     public function __toString()
     {
         return (string) $this->render();
