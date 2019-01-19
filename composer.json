@@ -1,7 +1,7 @@
 {
     "scripts": {
-        "work": "php worker.php",
-        "serve": "php -S 127.0.0.1:8888 -t public public/index.php"
+        "work": "@php worker.php",
+        "serve": "@php -S 127.0.0.1:8888 -t public public/index.php"
     },
     "require": {
         "amphp/http-server-router": "^1.0",

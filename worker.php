@@ -86,16 +86,10 @@ $websocket = new class extends Websocket
             $object = $this->roots[$clientId][$json->root];
             $object->{$json->method}($binds, ...$arguments);
 
-            if ($object instanceof StatefulComponent) {
-                $object->statefulRender();
-            } else {
-                $object->render();
-            }
-
             $data = json_encode([
                 "cause" => $json->type,
                 "type" => "phpx-render",
-                "data" => (string) $object,
+                "data" => (string) $object->statefulRender(),
                 "root" => $json->root,
             ]);
 

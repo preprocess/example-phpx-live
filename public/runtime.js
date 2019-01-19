@@ -40,7 +40,7 @@ if (!window.PhpxLiveSocket) {
                 const root = document.querySelector(`[phpx-id='${json.root}']`)
 
                 if (!root) {
-                    throw new Error(`You forgot to connect() something...`)
+                    throw new Error("Can't find the root")
                 }
 
                 root.innerHTML = json.data

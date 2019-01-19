@@ -10,14 +10,11 @@ if (PHP_SAPI == "cli-server") {
 
 require_once __DIR__ . "/../vendor/autoload.php";
 
-use Slim\App;
-use function Pre\Plugin\process;
+$app = new Slim\App();
 
-$app = new App();
+Pre\Plugin\process(__DIR__ . "/../source/helpers.pre");
 
-process(__DIR__ . "/../source/helpers.pre");
-
-$routes = process(__DIR__ . "/../source/routes.pre");
+$routes = Pre\Plugin\process(__DIR__ . "/../source/routes.pre");
 $routes($app);
 
 $app->run();

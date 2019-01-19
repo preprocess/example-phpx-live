@@ -1,33 +1,33 @@
 <?php
 
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Req;
+use Psr\Http\Message\ResponseInterface as Res;
 use Slim\App;
 use function App\render;
 
 return function(App $app) {
-    $app->get("/", function(Request $request, Response $response) {
-        $response->getBody()->write(<App.Responder.HomeResponder />);
-        return $response;
+    $app->get("/", function(Req $req, Res $res) {
+        $res->getBody()->write(<App.Responder.HomeResponder />);
+        return $res;
     });
     
-    $app->get("/counter", function(Request $request, Response $response) {
-        $response->getBody()->write(<App.Responder.CounterResponder />);
-        return $response;
+    $app->get("/counter", function(Req $req, Res $res) {
+        $res->getBody()->write(<App.Responder.CounterResponder />);
+        return $res;
     });
     
-    $app->get("/todos", function(Request $request, Response $response) {
-        $response->getBody()->write(<App.Responder.TodosResponder />);
-        return $response;
+    $app->get("/todos", function(Req $req, Res $res) {
+        $res->getBody()->write(<App.Responder.TodosResponder />);
+        return $res;
     });
     
-    $app->get("/combined", function(Request $request, Response $response) {
-        $response->getBody()->write(<App.Responder.CombinedResponder />);
-        return $response;
+    $app->get("/combined", function(Req $req, Res $res) {
+        $res->getBody()->write(<App.Responder.CombinedResponder />);
+        return $res;
     });
     
-    $app->get("/time", function(Request $request, Response $response) {
-        $response->getBody()->write(<App.Responder.TimeResponder />);
-        return $response;
+    $app->get("/time", function(Req $req, Res $res) {
+        $res->getBody()->write(<App.Responder.TimeResponder />);
+        return $res;
     });
 };
