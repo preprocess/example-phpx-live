@@ -686,16 +686,16 @@
         },
         {
             "name": "amphp/process",
-            "version": "v1.0.2",
+            "version": "v1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amphp/process.git",
-                "reference": "90f3f31cbd0eee7fa5ae03ce588b1fc8f122997c"
+                "reference": "e7e28219da753f865f9055e87d0b9b110ea607ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amphp/process/zipball/90f3f31cbd0eee7fa5ae03ce588b1fc8f122997c",
-                "reference": "90f3f31cbd0eee7fa5ae03ce588b1fc8f122997c",
+                "url": "https://api.github.com/repos/amphp/process/zipball/e7e28219da753f865f9055e87d0b9b110ea607ba",
+                "reference": "e7e28219da753f865f9055e87d0b9b110ea607ba",
                 "shasum": ""
             },
             "require": {
@@ -737,7 +737,7 @@
             ],
             "description": "Asynchronous process manager.",
             "homepage": "https://github.com/amphp/process",
-            "time": "2018-11-09T00:02:00+00:00"
+            "time": "2019-01-15T21:42:43+00:00"
         },
         {
             "name": "amphp/socket",
@@ -1617,16 +1617,16 @@
         },
         {
             "name": "pre/plugin",
-            "version": "0.11.3",
+            "version": "0.11.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/preprocess/pre-plugin.git",
-                "reference": "5195958886ab8ef54c444b18126081021f45f500"
+                "reference": "860c24414758b7fb76f79910d1598357589e327d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/preprocess/pre-plugin/zipball/5195958886ab8ef54c444b18126081021f45f500",
-                "reference": "5195958886ab8ef54c444b18126081021f45f500",
+                "url": "https://api.github.com/repos/preprocess/pre-plugin/zipball/860c24414758b7fb76f79910d1598357589e327d",
+                "reference": "860c24414758b7fb76f79910d1598357589e327d",
                 "shasum": ""
             },
             "require": {
@@ -1659,7 +1659,7 @@
             "license": [
                 "MIT"
             ],
-            "time": "2018-10-08T15:34:29+00:00"
+            "time": "2019-01-20T07:26:24+00:00"
         },
         {
             "name": "pre/short-closures",
@@ -2042,7 +2042,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "BackEndTea@gmail.com"
+                    "email": "backendtea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",
